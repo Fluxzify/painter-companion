@@ -1,18 +1,36 @@
 <template>
-  <div class="relative w-full h-screen bg-black overflow-hidden flex flex-col">
-    <div class="w-full p-4 z-10 text-white">
+  <div class="relative w-full h-screen bg-black overflow-hidden flex flex-col items-center">
+
+    <!-- Título -->
+    <div class="w-full p-4 z-10 text-white text-center">
       <h1 class="text-3xl font-bold">Compañero Interactivo</h1>
     </div>
 
-    <div ref="gameAreaDivRef" class="flex-grow relative overflow-hidden">
-      <InteractiveCanvas class="w-full h-full" /> 
+    <!-- Contenedor para el canvas centrado con márgenes laterales -->
+    <div
+      ref="gameAreaDivRef"
+      :style="{ width: gameAreaWidth + 'px', height: gameAreaHeight + 'px' }"
+      class="relative overflow-hidden border-4 border-purple-500 mx-auto max-w-[90%] md:max-w-[800px] w-full"
+    >
+      <InteractiveCanvas class="w-full h-full" />
+    </div>  
 
+    <!-- Div separador -->
+    <div class="h-8"></div> <!-- Ajusta aquí la separación vertical -->
+
+    <!-- Contenedor del Companion, centrado también -->
+    <div class="relative flex-grow-0 h-[120px] w-full flex justify-center">
       <Companion 
-        class="absolute z-20 bottom-0 left-1/2 -translate-x-1/2" 
+        class="z-20"
         :mouse-pos="relativeMousePos"
         :game-area-width="gameAreaDims.width"
         :game-area-height="gameAreaDims.height"
       />
+    </div>
+
+    <!-- Otro contenido (opcional) -->
+    <div class="mt-4 text-white">
+      <!-- Footer o botones futuros -->
     </div>
   </div>
 </template>

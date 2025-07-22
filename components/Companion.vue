@@ -1,24 +1,62 @@
 <template>
   <div
     class="absolute z-10 pointer-events-none"
-    style="width: 80px; height: 80px;" 
+    :style="{
+      width: `${containerSize}px`,
+      height: `${containerSize}px`,
+    }"
+  >
+    <div
+      class="relative"
+      :style="{
+        width: `${containerSize}px`,
+        height: `${containerSize}px`,
+      }"
     >
-    <div class="relative w-[80px] h-[80px]">
+      <!-- Personaje -->
       <img
         :src="companionImg"
         alt="Companion"
-        class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none"
+        class="absolute top-0 left-0"
+        :style="{
+          width: `${characterSize}px`,
+          height: `${characterSize}px`,
+          userSelect: 'none',
+          pointerEvents: 'none',
+        }"
       />
 
+      <!-- Brazo -->
       <img
         :src="armImg"
         alt="Brazo"
-        class="absolute w-[80px] h-[16px] object-contain"
+        class="absolute"
         :style="{
-          top: '50%',
-          left: '50%',
-          transform: `translate(-40px, -8px) rotate(${angle}deg)`,
-          transformOrigin: '0% 50%',
+          width: `${armSize}px`,
+          height: `${armSize}px`,
+          top: `${(containerSize - armSize) / 2}px`,
+          left: `${(containerSize - armSize) / 2}px`,
+          transform: `rotate(${angle}deg)`,
+          transformOrigin: 'center center',
+          userSelect: 'none',
+          pointerEvents: 'none',
+        }"
+      />
+
+      <!-- Arma -->
+      <img
+        :src="weaponImg"
+        alt="Arma"
+        class="absolute"
+        :style="{
+          width: `${weaponSize}px`,
+          height: `${weaponSize}px`,
+          top: `${(containerSize - weaponSize) / 2}px`,
+          left: `${(containerSize - weaponSize) / 2}px`,
+          transform: `rotate(${angle}deg)`,
+          transformOrigin: 'center center',
+          userSelect: 'none',
+          pointerEvents: 'none',
         }"
       />
     </div>
@@ -26,9 +64,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import companionImg from '@/assets/Companion/companion.png'
-import armImg from '@/assets/Companion/arm.png'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+import companionImg from '@/assets/Companion/Sprites/Companion/Wizard Base.png'
+import armImg from '@/assets/Companion/Sprites/Arm/Arm Base.png'
+import weaponImg from '@/assets/Companion/Sprites/Weapon/Ice Staff.png'
 
 const props = defineProps({
   mousePos: {
@@ -47,8 +87,20 @@ const props = defineProps({
 
 const prevMouse = ref({ x: 0, y: 0 })
 const movementThreshold = 0.5
-
 const angle = ref(0)
+
+// Tamaños originales
+const originalCharacterSize = 1134
+const originalArmSize = 320
+const originalWeaponSize = 1200
+
+// Escalado a la mitad
+const characterSize = originalCharacterSize / 3
+const armSize = originalArmSize / 3
+const weaponSize = originalWeaponSize / 3
+
+// Tamaño contenedor para que contenga el mayor elemento (arma escalada)
+const containerSize = Math.max(characterSize, armSize, weaponSize)
 
 function lerpAngle(a, b, t) {
   let diff = b - a
@@ -59,18 +111,15 @@ function lerpAngle(a, b, t) {
 
 function updateArmAngle() {
   if (props.gameAreaWidth === 0 || props.gameAreaHeight === 0) {
-    requestAnimationFrame(updateArmAngle);
-    return;
+    requestAnimationFrame(updateArmAngle)
+    return
   }
 
-  // Las coordenadas del centro del Companion en el área de juego
-  // Si está abajo al centro, su X es gameAreaWidth / 2
-  // Y su Y es gameAreaHeight - (altura_companion / 2)
-  const companionCenterX = props.gameAreaWidth / 2;
-  const companionCenterY = props.gameAreaHeight - 40; // 40 es la mitad de la altura del companion (80px)
+  const companionCenterX = props.gameAreaWidth / 2
+  const companionCenterY = props.gameAreaHeight - characterSize / 2
 
-  const dx = props.mousePos.x - companionCenterX;
-  const dy = props.mousePos.y - companionCenterY;
+  const dx = props.mousePos.x - companionCenterX
+  const dy = props.mousePos.y - companionCenterY
 
   const deltaX = Math.abs(props.mousePos.x - prevMouse.value.x)
   const deltaY = Math.abs(props.mousePos.y - prevMouse.value.y)
@@ -91,7 +140,7 @@ function handleClick() {
     detail: {
       from: {
         x: props.gameAreaWidth / 2,
-        y: props.gameAreaHeight - 40 // Punto de origen del disparo es el centro inferior del Companion
+        y: props.gameAreaHeight - characterSize / 2
       },
       angle: angle.value
     }
@@ -100,7 +149,7 @@ function handleClick() {
 }
 
 onMounted(() => {
-  prevMouse.value = { ...props.mousePos };
+  prevMouse.value = { ...props.mousePos }
   window.addEventListener('click', handleClick)
   updateArmAngle()
 })
@@ -108,10 +157,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('click', handleClick)
 })
-
-watch(() => props.mousePos, () => {
-  // Reaccionar a cambios de mousePos si es necesario
-});
 </script>
 
 <style scoped>
