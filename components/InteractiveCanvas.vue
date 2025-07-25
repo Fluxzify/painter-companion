@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-// Refs y contexto
+// Refs: acceso a canvas y contexto 2D
 const canvasRef = ref(null)
 const ctx = ref(null)
 
@@ -175,5 +175,7 @@ onBeforeUnmount(() => {
 <style scoped>
 canvas {
   cursor: url('/assets/Canva/mira.png'), auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
 }
 </style>
