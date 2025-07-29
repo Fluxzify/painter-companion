@@ -1,10 +1,10 @@
 <script setup>  
-import  InteractiveCanvasrefactor  from '~/components/InteractiveCanvas-refactor.vue'
+import  InteractiveCanvasrefactor  from '~/components/InteractiveCanvas.vue'
 </script>
 
 <template>
 
 
 
-<InteractiveCanvasrefactor/>
+<InteractiveCanvas/>
 </template>
