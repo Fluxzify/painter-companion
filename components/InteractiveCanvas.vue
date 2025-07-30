@@ -2,11 +2,10 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import hieloImageSrc from '~/assets/Canva/Effects/Hielo.png'
 import frameImageSrc from '~/assets/Canva/Frames/Default.png'
-import { DEFAULT_GRID_SIZE } from '@/constants/grid'
 
-import { useCanvasDimensions } from '@/composables/useCanvasDimensions'
-import { useMouseTracker } from '@/composables/useMouseTracker'
-import { useBlockPainter } from '~/composables/useBlockPainter'
+import { useCanvasDimensions } from '~/composables/canvas/useCanvasDimensions'
+import { useMouseTracker } from '~/composables/canvas/useMousePosCanva'
+import { useBlockPainter } from '~/composables/canvas/useBlockPainter'
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const ctx = ref<CanvasRenderingContext2D | null>(null)
 const powerImg = ref<HTMLImageElement | null>(null)

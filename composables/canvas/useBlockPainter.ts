@@ -1,5 +1,8 @@
 
 // ...
+import { useGridSystem } from "~/composables/canvas/useGridSystem"
+import { useCanvasPainter } from "~/composables/canvas/useCanvasPainter"
+
 export function useBlockPainter(
     canvasRef: Ref<HTMLCanvasElement | null>,
     ctx: Ref<CanvasRenderingContext2D | null>,
@@ -13,7 +16,6 @@ export function useBlockPainter(
     const drawBlock = () => {
         const blockPos = calculateBlockPos()
         draw(blockPos)
-        console.log(`Block drawn at position: (${blockPos.x}, ${blockPos.y})`)
     }
 
     return {
