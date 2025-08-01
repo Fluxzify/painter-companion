@@ -49,9 +49,9 @@ function initializeCharacter() {
 
   const rotation = useRotation({ x: centerX, y: centerY }, mousePosition)
 
-  arm = useArm(centerX / 2, centerY, rotation.angle.value)
+  arm = useArm(centerX / 1.8 , centerY / 1.2 , rotation.angle.value)
   body = useBody(centerX, centerY)
-  weapon = useWeapon(centerX / 3, centerY, rotation.angle.value)
+  weapon = useWeapon(centerX  / 1.3, centerY / 1.3, rotation.angle.value)
 }
 
 function renderLoop() {
@@ -131,7 +131,5 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-canvas {
-  border: 1px solid #740f0f;
-}
+
 </style>

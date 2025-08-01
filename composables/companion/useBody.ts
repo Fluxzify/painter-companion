@@ -21,7 +21,7 @@ function draw(
 
   ctx.save()
   ctx.translate(x.value, y.value)
-  ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth, finalHeight)
+  ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth /1.5, finalHeight/1.5)
   ctx.restore()
 }
 
