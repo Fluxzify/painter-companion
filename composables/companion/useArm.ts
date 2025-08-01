@@ -9,25 +9,21 @@ export function useArm(initialX: number, initialY: number, initialRotation = 0) 
   const skin = ref('')
 
   function draw(
-    ctx: CanvasRenderingContext2D,
-    width?: number,
-    height?: number,
-    skinSrc = ''
-  ) {
-    const img = new Image()
-    img.src = skinSrc
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement | null,
+  width?: number,
+  height?: number
+) {
+  if (!img) return
 
-    const finalWidth = width ?? img.width
-    const finalHeight = height ?? img.height
+  const finalWidth = width ?? img.width
+  const finalHeight = height ?? img.height
 
-    ctx.save()
-    ctx.translate(x.value, y.value)
-    ctx.rotate((rotation.value * Math.PI) / 180)
-    ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth, finalHeight)
-    ctx.restore()
-
-
-
+  ctx.save()
+  ctx.translate(x.value, y.value)
+  ctx.rotate((rotation.value * Math.PI) / 180)
+  ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth, finalHeight)
+  ctx.restore()
 }
 
   return {

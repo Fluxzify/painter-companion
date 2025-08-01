@@ -1,18 +1,14 @@
-// composables/useMouseTracker.ts
-import { reactive } from 'vue'
+// composables/useMousePosCanva.ts
 
-export function useMouseTracker(canvasRef: Ref<HTMLCanvasElement | null>) {
-  const mousePosition = reactive({ x: 0, y: 0 })
-
+export function useMousePosCanva(canvas: HTMLCanvasElement, mousePosition: { x: number; y: number }) {
   const updateMouse = (event: MouseEvent) => {
-    if (!canvasRef.value) return
-    const rect = canvasRef.value.getBoundingClientRect()
+    const rect = canvas.getBoundingClientRect()
     mousePosition.x = event.clientX - rect.left
     mousePosition.y = event.clientY - rect.top
-}
+
+  }
 
   return {
-    mousePosition,
     updateMouse
   }
 }

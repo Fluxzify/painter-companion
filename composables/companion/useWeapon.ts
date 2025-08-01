@@ -10,24 +10,23 @@ export function useWeapon(
   const rotation = ref(initialRotation)
   const skin = ref('')
 
-  function draw(
-    ctx: CanvasRenderingContext2D,
-    width?: number,
-    height?: number,
-    skinSrc: string = ''
-  ) {
-    const img = new Image()
-    img.src = skinSrc
+function draw(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement | null,
+  width?: number,
+  height?: number
+) {
+  if (!img) return
 
-    const finalWidth = width ?? img.width
-    const finalHeight = height ?? img.height
+  const finalWidth = width ?? img.width
+  const finalHeight = height ?? img.height
 
-    ctx.save()
-    ctx.translate(x.value, y.value)
-    ctx.rotate((rotation.value * Math.PI) / 180)
-    ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth, finalHeight)
-    ctx.restore()
-  }
+  ctx.save()
+  ctx.translate(x.value, y.value)
+  ctx.rotate((rotation.value * Math.PI) / 180)
+  ctx.drawImage(img, -finalWidth / 2, -finalHeight / 2, finalWidth, finalHeight)
+  ctx.restore()
+}
 
   return {
     x,
