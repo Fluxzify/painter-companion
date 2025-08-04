@@ -3,7 +3,8 @@ import { ref, watch, computed, onMounted } from 'vue';
 import type { Ref } from 'vue';
 
 import InteractiveCanvas from '~/components/InteractiveCanvas.vue';
-import CompanionRefactor from '~/components/Companion-refactor.vue';
+import CompanionRefactor from '~/components/Companion.vue';
+import CanvasForm from '~/components/CanvasForm.vue'; 
 
 // Ref al componente hijo InteractiveCanvas
 const interactiveCanvasInstanceRef = ref<InstanceType<typeof InteractiveCanvas> | null>(null);
@@ -19,7 +20,7 @@ const canvasValue = computed(() => {
     <div class="canvas-wrapper">
       <InteractiveCanvas ref="interactiveCanvasInstanceRef" />
     </div>
-
+    
     <div class="companion-wrapper">
       <CompanionRefactor :canvas="canvasValue" />
     </div>

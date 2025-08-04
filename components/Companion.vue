@@ -1,167 +1,135 @@
-<template>
-  <div
-    class="absolute z-10 pointer-events-none"
-    :style="{
-      width: `${containerSize}px`,
-      height: `${containerSize}px`,
-    }"
-  >
-    <div
-      class="relative"
-      :style="{
-        width: `${containerSize}px`,
-        height: `${containerSize}px`,
-      }"
-    >
-      <!-- Personaje -->
-      <img
-        :src="companionImg"
-        alt="Companion"
-        class="absolute top-0 left-0"
-        :style="{
-          width: `${characterSize}px`,
-          height: `${characterSize}px`,
-          userSelect: 'none',
-          pointerEvents: 'none',
-        }"
-      />
+<script setup lang="ts">
+import { ref, onMounted, watch, onUnmounted, reactive } from 'vue'
+import { useArmSkins } from '@/composables/companion/useArmSkins'
+import { useBodySkins } from '@/composables/companion/useBodySkins'
+import { useWeaponSkins } from '@/composables/companion/useWeaponSkins'
+import { useArm } from '@/composables/companion/useArm'
+import { useBody } from '@/composables/companion/useBody'
+import { useWeapon } from '@/composables/companion/useWeapon'
+import { useRotation } from '~/composables/companion/useRotation'
+import { useMousePosCanva } from '~/composables/canvas/useMousePosCanva'
 
-      <!-- Brazo -->
-      <img
-        :src="armImg"
-        alt="Brazo"
-        class="absolute"
-        :style="{
-          width: `${armSize}px`,
-          height: `${armSize}px`,
-          top: `${(containerSize - armSize) / 2}px`,
-          left: `${(containerSize - armSize) / 2}px`,
-          transform: `rotate(${angle}deg)`,
-          transformOrigin: 'center center',
-          userSelect: 'none',
-          pointerEvents: 'none',
-        }"
-      />
+const bodySkin = ref('wizard')
+const armSkin = ref('spider')
+const weaponSkin = ref('iceStaff')
+const { armSkinUrl } = useArmSkins(armSkin)
+const { bodySkinUrl } = useBodySkins(bodySkin)
+const { weaponSkinUrl } = useWeaponSkins(weaponSkin)
 
-      <!-- Arma -->
-      <img
-        :src="weaponImg"
-        alt="Arma"
-        class="absolute"
-        :style="{
-          width: `${weaponSize}px`,
-          height: `${weaponSize}px`,
-          top: `${(containerSize - weaponSize) / 2}px`,
-          left: `${(containerSize - weaponSize) / 2}px`,
-          transform: `rotate(${angle}deg)`,
-          transformOrigin: 'center center',
-          userSelect: 'none',
-          pointerEvents: 'none',
-        }"
-      />
-    </div>
-  </div>
-</template>
+const props = defineProps<{ canvas: HTMLCanvasElement | null }>();
+const canvasWidth = ref(700)
+const canvasHeight = ref(700)
+const mousePosition = reactive({ x: 0, y: 0 })
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+let updateMouse: ((event: MouseEvent) => void) | null = null
 
-import companionImg from '@/assets/Companion/Sprites/Companion/Wizard Base.png'
-import armImg from '@/assets/Companion/Sprites/Arm/Arm Base.png'
-import weaponImg from '@/assets/Companion/Sprites/Weapon/Ice Staff.png'
+const loadedArmImg = ref<HTMLImageElement | null>(null)
+const loadedBodyImg = ref<HTMLImageElement | null>(null)
+const loadedWeaponImg = ref<HTMLImageElement | null>(null)
 
-const props = defineProps({
-  mousePos: {
-    type: Object,
-    default: () => ({ x: 0, y: 0 })
-  },
-  gameAreaWidth: {
-    type: Number,
-    default: 0
-  },
-  gameAreaHeight: {
-    type: Number,
-    default: 0
-  }
-})
+const canvasCompanionRef = ref<HTMLCanvasElement | null>(null)
+let ctx: CanvasRenderingContext2D | null = null
 
-const prevMouse = ref({ x: 0, y: 0 })
-const movementThreshold = 0.5
-const angle = ref(0)
+let arm: ReturnType<typeof useArm> | null = null
+let body: ReturnType<typeof useBody> | null = null
+let weapon: ReturnType<typeof useWeapon> | null = null
 
-// Tamaños originales
-const originalCharacterSize = 1134
-const originalArmSize = 320
-const originalWeaponSize = 1200
-
-// Escalado a la mitad
-const characterSize = originalCharacterSize / 3
-const armSize = originalArmSize / 3
-const weaponSize = originalWeaponSize / 3
-
-// Tamaño contenedor para que contenga el mayor elemento (arma escalada)
-const containerSize = Math.max(characterSize, armSize, weaponSize)
-
-function lerpAngle(a, b, t) {
-  let diff = b - a
-  while (diff > 180) diff -= 360
-  while (diff < -180) diff += 360
-  return a + diff * t
-}
-
-function updateArmAngle() {
-  if (props.gameAreaWidth === 0 || props.gameAreaHeight === 0) {
-    requestAnimationFrame(updateArmAngle)
-    return
-  }
-
-  const companionCenterX = props.gameAreaWidth / 2
-  const companionCenterY = props.gameAreaHeight - characterSize / 2
-
-  const dx = props.mousePos.x - companionCenterX
-  const dy = props.mousePos.y - companionCenterY
-
-  const deltaX = Math.abs(props.mousePos.x - prevMouse.value.x)
-  const deltaY = Math.abs(props.mousePos.y - prevMouse.value.y)
-
-  if (deltaX > movementThreshold || deltaY > movementThreshold) {
-    const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI)
-    angle.value = lerpAngle(angle.value, targetAngle, 0.1)
-
-    prevMouse.value.x = props.mousePos.x
-    prevMouse.value.y = props.mousePos.y
-  }
-
-  requestAnimationFrame(updateArmAngle)
-}
-
-function handleClick() {
-  const customEvent = new CustomEvent('companion-fire', {
-    detail: {
-      from: {
-        x: props.gameAreaWidth / 2,
-        y: props.gameAreaHeight - characterSize / 2
-      },
-      angle: angle.value
-    }
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = src
   })
-  window.dispatchEvent(customEvent)
 }
 
-onMounted(() => {
-  prevMouse.value = { ...props.mousePos }
-  window.addEventListener('click', handleClick)
-  updateArmAngle()
+function initializeCharacter() {
+  const centerX = canvasWidth.value / 2
+  const centerY = canvasHeight.value / 2
+
+  const rotation = useRotation({ x: centerX, y: centerY }, mousePosition)
+
+  arm = useArm(centerX / 1.8 , centerY / 1.2 , rotation.angle.value)
+  body = useBody(centerX, centerY)
+  weapon = useWeapon(centerX  / 1.3, centerY / 1.3, rotation.angle.value)
+}
+
+function renderLoop() {
+  if (!ctx || !arm || !body || !weapon) return
+
+  const origin = {
+    x: canvasWidth.value / 2,
+    y: canvasHeight.value / 2,
+  }
+
+  const rotation = useRotation(origin, mousePosition)
+  arm.rotation.value = rotation.angle.value
+  weapon.rotation.value = rotation.angle.value
+
+  ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value)
+
+  arm.draw(ctx, loadedArmImg.value, canvasWidth.value / 3, canvasHeight.value / 3)
+  weapon.draw(ctx, loadedWeaponImg.value, canvasWidth.value, canvasHeight.value)
+  body.draw(ctx, loadedBodyImg.value, canvasWidth.value, canvasHeight.value)
+
+  requestAnimationFrame(renderLoop)
+}
+
+onMounted(async () => {
+  const canvas = canvasCompanionRef.value
+  if (!canvas) return
+
+  ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  canvasWidth.value = canvas.width
+  canvasHeight.value = canvas.height
+
+  loadedArmImg.value = await loadImage(armSkinUrl.value)
+  loadedBodyImg.value = await loadImage(bodySkinUrl.value)
+  loadedWeaponImg.value = await loadImage(weaponSkinUrl.value)
+
+  initializeCharacter()
+  renderLoop()
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('click', handleClick)
+watch(
+  () => props.canvas,
+  (newCanvasElement, oldCanvasElement) => {
+    if (oldCanvasElement && updateMouse) {
+      oldCanvasElement.removeEventListener('mousemove', updateMouse)
+    }
+
+    if (newCanvasElement) {
+      const result = useMousePosCanva(newCanvasElement, mousePosition)
+      updateMouse = result.updateMouse
+
+      newCanvasElement.addEventListener('mousemove', (e) => {
+        if (updateMouse) {
+          updateMouse(e)
+        }
+      })
+    }
+  },
+  { immediate: true }
+)
+
+onUnmounted(() => {
+  if (props.canvas && updateMouse) {
+    props.canvas.removeEventListener('mousemove', updateMouse)
+  }
 })
 </script>
 
+<template>
+  <canvas
+    ref="canvasCompanionRef"
+    :width="canvasWidth"
+    :height="canvasHeight"
+    :style="{ top: '109px', left: '0px' }"
+  />
+</template>
+
 <style scoped>
-img {
-  user-select: none;
-  pointer-events: none;
-}
+
 </style>

@@ -16,6 +16,7 @@ export function useBlockPainter(
     const drawBlock = () => {
         const blockPos = calculateBlockPos()
         draw(blockPos)
+          return blockPos
     }
 
     return {

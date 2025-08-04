@@ -9,7 +9,6 @@
       <!-- Botones soft -->
       <nav class="space-x-4">
         <NuxtLink to="/" class="btn btn-soft btn-primary">Inicio</NuxtLink>
-        <NuxtLink to="/index-refactorizado" class="btn btn-soft btn-secondary">index nuevo</NuxtLink>
         <button class="btn btn-primary">Link</button>
       </nav>
     </div>
