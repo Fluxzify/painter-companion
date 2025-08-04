@@ -8,8 +8,10 @@
 
       <!-- Botones soft -->
       <nav class="space-x-4">
-        <NuxtLink to="/" class="btn btn-soft btn-primary">Inicio</NuxtLink>
-        <button class="btn btn-primary">Link</button>
+        <NuxtLink to="/" class="btn btn-soft btn-primary">Home</NuxtLink>
+        <NuxtLink to="Canvas" class="btn btn-soft btn-primary">Draw here!</NuxtLink>
+        <NuxtLink to="FormCanvas" class="btn btn-soft btn-primary">Form</NuxtLink>
+
       </nav>
     </div>
   </header>
