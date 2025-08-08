@@ -11,7 +11,7 @@ export function useArmSkins(skin: Ref<string>) {
             case 'spider':
                 return new URL(`${basePath}Spider.png`, import.meta.url).href
             default:
-                return new URL(`${basePath}Default.png`, import.meta.url).href
+                return new URL(`${basePath}Wizard.png`, import.meta.url).href
         }
     })
 

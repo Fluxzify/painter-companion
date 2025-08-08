@@ -27,7 +27,7 @@ const onSubmit = () => {
 <template>
   <div class="min-h-screen flex justify-center items-center bg-base-100">
     <form @submit.prevent="onSubmit" class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-      <legend class="fieldset-legend mb-4">Canvas Settings</legend>
+      <legend class="fieldset-legend mb-4">Settings of your new canvas</legend>
 
       <label class="label" for="name">Name</label>
       <input

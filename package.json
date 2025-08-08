@@ -13,6 +13,7 @@
     "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.11.2",
     "@tailwindcss/vite": "^4.1.11",
+    "axios": "^1.11.0",
     "fabric": "^6.7.1",
     "konva": "^9.3.22",
     "nuxt": "^4.0.0",

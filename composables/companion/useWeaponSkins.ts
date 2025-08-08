@@ -13,7 +13,7 @@ export function useWeaponSkins(skin: Ref<string>) {
       case 'dynamiteStaff':
         return new URL(`${basePath}Dynamite Staff.png`, import.meta.url).href
       default:
-        return new URL(`${basePath}Default.png`, import.meta.url).href
+        return new URL(`${basePath}Ice Staff.png`, import.meta.url).href
     }
   })
 

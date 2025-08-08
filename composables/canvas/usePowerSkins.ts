@@ -13,10 +13,10 @@ export function usePowerSkins(power: Ref<string>) {
         return new URL(`${basePath}Ice.png`, import.meta.url).href
       case 'water':
         return new URL(`${basePath}Water.png`, import.meta.url).href
-      case 'cobweb':
-        return new URL(`${basePath}Cobweb.png`, import.meta.url).href
+      case 'spiderweb':
+        return new URL(`${basePath}SpiderWeb.png`, import.meta.url).href
       default:
-        return new URL(`${basePath}Default.png`, import.meta.url).href
+        return new URL(`${basePath}Ice.png`, import.meta.url).href
     }
   })
 

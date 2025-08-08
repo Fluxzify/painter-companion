@@ -13,8 +13,8 @@ defineExpose({ canvasRef })
 
 const ctx = ref<CanvasRenderingContext2D | null>(null)
 
-const powerSkin = ref('cobweb')
-const { powerSkinUrl } = usePowerSkins(powerSkin)
+const powerType = ref('ice')
+const { powerSkinUrl } = usePowerSkins(powerType)
 const loadedPowerImg = ref<HTMLImageElement | null>(null) // reemplazo de powerImg
 
 const mousePosition = reactive({ x: 0, y: 0 })
@@ -71,7 +71,7 @@ const position = calculateBlockPos()
 
   const result = drawBlock()
   if (result) {
-    gridStore.setCell(result.x, result.y, powerSkin.value)
+    gridStore.setCell(result.x, result.y, powerType.value)
     console.log(gridStore.getPaintedCells())
   }
   }
