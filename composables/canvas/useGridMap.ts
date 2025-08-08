@@ -52,6 +52,8 @@ const isCellPainted = (x: number, y: number): boolean => {
   const key = getKey(x, y)
   return gridMap.value.has(key)
 }
+
+
   return {
     gridMap,
     setCell,

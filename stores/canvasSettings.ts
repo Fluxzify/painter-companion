@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useCanvasSettingsStore = defineStore('canvasSettings', {
   state: () => ({
-    gridSize: 40,
+    gridSize: 60,
   }),
   actions: {
     setGridSize(newSize: number) {

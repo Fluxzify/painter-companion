@@ -16,6 +16,9 @@ const ctx = ref<CanvasRenderingContext2D | null>(null)
 
 const selectedPower = ref<Powers | null>(null)
 
+const emit = defineEmits<{
+  (e: 'update:selectedPower', value: Powers | null): void
+}>()
 
 
 const powerSkinUrl = computed(() => {
@@ -28,8 +31,10 @@ const powerSkinUrl = computed(() => {
 
 
 function setPower(power: Powers) {
-  selectedPower.value = power
-}
+  selectedPower.value = power  // actualiza localmente
+  emit('update:selectedPower', power)
+  console.log('power', power)
+  }  // emite al padre
 
 
 const loadedPowerImg = ref<HTMLImageElement | null>(null) // reemplazo de powerImg
@@ -64,7 +69,6 @@ watch(
     if (!url) return
     try {
       loadedPowerImg.value = await loadImage(url)
-      console.log('Power image loaded:', url)
     } catch (error) {
       console.error('Failed to load power image:', error)
     }
@@ -93,7 +97,6 @@ if (!result) return
 if (!selectedPower.value) return
 
 gridStore.setCell(result.x, result.y, selectedPower.value)
-console.log(gridStore.getPaintedCells())
   }
   
 
@@ -102,12 +105,39 @@ onMounted(() => {
   const canvas = canvasRef.value
   if (!canvas) return
 
+
+  
   ctx.value = canvas.getContext('2d')
 
   const result = useMousePosCanva(canvas, mousePosition)
   updateMouse = result.updateMouse
 
-  canvas.addEventListener('mousemove', updateMouse)
+  let isDragging = false
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true
+          if (!updateMouse) return
+
+    updateMouse(e)  // actualizar posición del mouse
+    draw()          // dibujar en el punto inicial
+  })
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      if (!updateMouse) return
+      updateMouse(e)
+      draw()
+    }
+  })
+
+  canvas.addEventListener('mouseup', () => {
+    isDragging = false
+  })
+
+  canvas.addEventListener('mouseleave', () => {
+    isDragging = false
+  })
+
   canvas.addEventListener('click', draw)
 
   resizeCanvas()

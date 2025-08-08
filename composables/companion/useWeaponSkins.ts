@@ -1,19 +1,26 @@
-import { computed } from 'vue'
-import type { Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
+import { Powers } from '~/enums/powers'
 
 const basePath = '../../assets/Companion/Sprites/Weapon/'
 
-export function useWeaponSkins(skin: Ref<string>) {
+export function useWeaponSkins(power: Ref<Powers | null>) {
+
   const weaponSkinUrl = computed(() => {
-    switch (skin.value) {
-      case 'iceStaff':
-        return new URL(`${basePath}Ice Staff.png`, import.meta.url).href
-      case 'fireStaff':
+    if (!power.value) return null
+
+    switch (power.value) {
+      case Powers.Fire:
         return new URL(`${basePath}Fire Staff.png`, import.meta.url).href
-      case 'dynamiteStaff':
-        return new URL(`${basePath}Dynamite Staff.png`, import.meta.url).href
-      default:
+      case Powers.Ice:
         return new URL(`${basePath}Ice Staff.png`, import.meta.url).href
+      case Powers.Water:
+        return new URL(`${basePath}Water Staff.png`, import.meta.url).href
+      case Powers.SpiderWeb:
+        return null
+      case Powers.Leaf:
+        return new URL(`${basePath}Leaf Staff.png`, import.meta.url).href
+      default:
+        return null
     }
   })
 
