@@ -1,10 +1,12 @@
 // composables/useGridMap.ts
 import { ref } from 'vue'
+import { Powers } from '~/enums/powers'
+
 
 export interface GridCell {
   x: number
   y: number
-  power: string
+  power: Powers
 }
 
 export function useGridMap() {
@@ -14,7 +16,7 @@ export function useGridMap() {
   const getKey = (x: number, y: number): string => `${x},${y}`
 
   // Agrega o actualiza una celda
-const setCell = (x: number, y: number, power: string) => {
+const setCell = (x: number, y: number, power: Powers) => {
   const key = getKey(x, y)
   const existing = gridMap.value.get(key)
 

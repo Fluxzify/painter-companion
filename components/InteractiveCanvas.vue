@@ -7,15 +7,34 @@ import { useBlockPainter } from '~/composables/canvas/useBlockPainter'
 import { useGridMap } from '~/composables/canvas/useGridMap'
 import { usePowerSkins } from '~/composables/canvas/usePowerSkins'
 import { useGridSystem } from '~/composables/canvas/useGridSystem'
+import { Powers } from '~/enums/powers'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 defineExpose({ canvasRef })
 
 const ctx = ref<CanvasRenderingContext2D | null>(null)
 
-const powerType = ref('ice')
-const { powerSkinUrl } = usePowerSkins(powerType)
+const selectedPower = ref<Powers | null>(null)
+
+
+
+const powerSkinUrl = computed(() => {
+  if (selectedPower.value === null) {
+    return ''
+  }
+
+  return usePowerSkins(selectedPower.value).powerSkinUrl.value
+})
+
+
+function setPower(power: Powers) {
+  selectedPower.value = power
+}
+
+
 const loadedPowerImg = ref<HTMLImageElement | null>(null) // reemplazo de powerImg
+
+const powersList = Object.values(Powers)
 
 const mousePosition = reactive({ x: 0, y: 0 })
 let updateMouse: ((e: MouseEvent) => void) | null = null
@@ -69,11 +88,12 @@ const position = calculateBlockPos()
     return 
   }
 
-  const result = drawBlock()
-  if (result) {
-    gridStore.setCell(result.x, result.y, powerType.value)
-    console.log(gridStore.getPaintedCells())
-  }
+const result = drawBlock()
+if (!result) return
+if (!selectedPower.value) return
+
+gridStore.setCell(result.x, result.y, selectedPower.value)
+console.log(gridStore.getPaintedCells())
   }
   
 
@@ -106,48 +126,62 @@ onUnmounted(() => {
 
 
 <template>
-  <div
-    class="canvas-wrapper"
-    :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px', position: 'relative' }"
-  >
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <button  
+        v-for="power in powersList" 
+        :key="power" 
+        type="button"
+        class="btn btn-soft btn-primary"
+        @click="setPower(power)"
+      >
+        {{ power }}
+      </button>
+    </div>
+
     <div
-      class="canvas-inner"
-      :style="{
-        position: 'absolute',
-        top: canvasInnerTop + 'px',
-        left: canvasInnerLeft + 'px',
-        width: canvasInnerWidth + 'px',
-        height: canvasInnerHeight + 'px',
-        overflow: 'hidden'
-      }"
+      class="canvas-wrapper"
+      :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px', position: 'relative' }"
     >
-      <canvas
-        ref="canvasRef"
-        :width="canvasInnerWidth"
-        :height="canvasInnerHeight"
+      <div
+        class="canvas-inner"
         :style="{
+          position: 'absolute',
+          top: canvasInnerTop + 'px',
+          left: canvasInnerLeft + 'px',
           width: canvasInnerWidth + 'px',
           height: canvasInnerHeight + 'px',
-          border: '1px solid rgb(6,65,141)',
-          backgroundColor: '#eee'
+          overflow: 'hidden'
         }"
-      ></canvas>
+      >
+        <canvas
+          ref="canvasRef"
+          :width="canvasInnerWidth"
+          :height="canvasInnerHeight"
+          :style="{
+            width: canvasInnerWidth + 'px',
+            height: canvasInnerHeight + 'px',
+            border: '1px solid rgb(6,65,141)',
+            backgroundColor: '#eee'
+          }"
+        ></canvas>
+      </div>
+      <img
+        :src="frameImageSrc"
+        alt="Marco"
+        class="frame"
+        :style="{
+          width: canvasWidth + 'px',
+          height: canvasHeight + 'px',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 2
+        }"
+      />
     </div>
-    <img
-      :src="frameImageSrc"
-      alt="Marco"
-      class="frame"
-      :style="{
-        width: canvasWidth + 'px',
-        height: canvasHeight + 'px',
-        pointerEvents: 'none',
-        userSelect: 'none',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        zIndex: 2
-      }"
-    />
   </div>
 </template>
 
