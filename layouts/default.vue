@@ -3,8 +3,12 @@
     <!-- Header -->
     <header class="w-full bg-purple-700 text-white shadow-md">
       <div class="container mx-auto flex justify-between items-center py-4 px-6">
-        <!-- Logo o título -->
-        <h1 class="text-2xl font-bold">Paint Like a Wiz</h1>
+        
+        <!-- Logo o título con GIF a la izquierda -->
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <img :src="wizGif" alt="Mago pintando" class="w-32 h-30"/>
+          Paint Like a Wiz
+        </h1>
 
         <!-- Botones -->
         <nav class="space-x-4">
@@ -17,7 +21,6 @@
           <template v-else>
             <button @click="logout" class="btn btn-soft btn-danger">Logout</button>
           </template>
-
         </nav>
       </div>
     </header>
@@ -37,16 +40,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useRouter } from 'vue-router';
+import wizGif from '~/assets/Icon Wiz.gif'; 
 
 const auth = useAuthStore();
 const router = useRouter();
 
 function logout() {
   auth.logout();
-  router.push('/login'); // Opcional: redirige a la página de login después de cerrar sesión
+  router.push('/login');
 }
 </script>
-
-<style scoped>
-/* Estilos globales del layout si quieres */
-</style>

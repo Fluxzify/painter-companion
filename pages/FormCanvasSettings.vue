@@ -14,6 +14,8 @@ const onSubmit = () => {
     return
   }
 
+
+
   console.log('Form submitted:', {
     name: name.value,
     description: description.value,
